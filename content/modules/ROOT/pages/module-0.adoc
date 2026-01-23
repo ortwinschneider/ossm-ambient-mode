@@ -110,7 +110,7 @@ But the combination comes with some caveats:
 - Existing sidecar meshes will require an update (restart)
 - Traffic between sidecars and ambient workloads will bypass waypoints, meaning only L4 features are applied.
 
-Navigate to the directory: [050-ambient-and-sidecar](./ambient/050-ambient-and-sidecar/Readme.md) and follow the instructions.
+Navigate to link:./module-5.html[Combining ambient and sidecar mode] and follow the instructions.
 
 == 6. Traffic Management
 
@@ -120,7 +120,7 @@ The key to traffic management in Ambient Mode is understanding when traffic is h
 - **Ztunnel**: Handles L4 (TCP) traffic management, primarily security. It provides connection-level load balancing, mTLS encryption (using HBONE), and L4 authorization. It does not read HTTP headers.
 - **Waypoint Proxy**: Handles L7 (HTTP/gRPC) traffic management. This is where the advanced, application-aware features are enabled.
 
-Navigate to the directory: [060-traffic-management](./ambient/060-traffic-management/Readme.md) and follow the instructions.
+Navigate to link:./module-6.html[Traffic Management] and follow the instructions.
 
 == 7. Implementing Resilience
 
@@ -133,7 +133,7 @@ Istio and OpenShift Service Mesh provides powerful built-in features to implemen
 * **Load balancing strategies**: Distribute traffic intelligently across instances
 * **Outlier detection**: Automatically eject misbehaving service instances
 
-Navigate to the directory: [070-resilience](./ambient/070-resilience/Readme.md) and follow the instructions.
+Navigate to link:./module-7.html[Implementing Resilience] and follow the instructions.
 
 == 8. Authentication and Authorization
 
@@ -149,5 +149,5 @@ Istio provides strong, built-in security capabilities at the service mesh level:
 
 With Istio, authentication and authorization become infrastructure concerns rather than application concerns. This module will show how to secure service-to-service communication and APIs in a uniform, declarative, and production-ready way.
 
-Navigate to the directory: [080-authorization](./ambient/080-authorization/Readme.md) and follow the instructions.
+Navigate to link:./module-8.html[Authentication and Authorization] and follow the instructions.
 
