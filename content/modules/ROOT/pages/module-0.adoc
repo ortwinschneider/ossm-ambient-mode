@@ -72,7 +72,7 @@ Navigate to link:./module-1.html[Install OpenShift Service Mesh Ambient Mode] an
 
 Red Hat OpenShift Observability provides real-time visibility, monitoring, and analysis of various system metrics, logs, and events to help you quickly diagnose and troubleshoot issues before they impact systems or applications.
 
-Navigate to the directory: [020-observability-install](./ambient/020-observability-install/Readme.md) and follow the instructions.
+Navigate to link:./module-2.html[Enable Service Mesh Observability] and follow the instructions.
 
 == 3. Install the Distributed Tracing Stack
 

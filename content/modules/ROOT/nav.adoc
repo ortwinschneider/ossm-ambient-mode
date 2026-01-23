@@ -1,5 +1,5 @@
 * xref:module-0.adoc[0. Introduction]
-** xref:module-0.adoc#about-ambient-mode[About Ambient mode]
+** xref:module-0.adoc#about-ambient-mode[About ambient mode]
 ** xref:module-0.adoc#overview[Lab modules overview]
 ** xref:module-0.adoc#prerequisites[Install prerequisites]
 
@@ -7,3 +7,12 @@
 ** xref:module-1.adoc#ovn-config[Configure OVN CNI]
 ** xref:module-1.adoc#install-ambient[Install Ambient Mode]
 ** xref:module-1.adoc#verify-installation[Verify the installation]
+
+* xref:module-2.adoc[2. Enable Service Mesh Observability]
+** xref:module-2.adoc#enable-openshift-user-workload-monitoring[Enable OpenShift user workload monitoring]
+** xref:module-2.adoc#create-servicemonitor-podmonitors[Create ServiceMonitor and PodMonitors]
+** xref:module-2.adoc#enable-access-logging[Enable Access Logging]
+** xref:module-2.adoc#install-grafana-deployment[Install Grafana]
+** xref:module-2.adoc#install-kiali[Install Kiali]
+** xref:module-2.adoc#install-ossm-console-plugin[Install the OSSMC Plugin]
+

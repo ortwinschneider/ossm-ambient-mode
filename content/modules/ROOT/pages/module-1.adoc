@@ -4,7 +4,7 @@ Istio ambient mode introduces a new way to manage service mesh without using tra
 
 Ambient mode uses a different data plane architecture that splits traffic processing between a per-node Layer 4 (L4) proxy called Ztunnel (Zero-Trust Tunnel) and an optional Layer 7 (L7) proxy called waypoint proxy.
 
-NOTE: Navigate to the subdirectory: `010-ambient-install`
+IMPORTANT: Navigate to the subdirectory: `010-ambient-install`
 
 [#ovn-config]
 == 1.1 Configure OVN CNI
