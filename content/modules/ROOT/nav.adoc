@@ -37,3 +37,8 @@
 ** xref:module-4.adoc#expose-ingress-gateway[Expose the Ingress Gateway]
 ** xref:module-4.adoc#observe-application[Observe the application]
 ** xref:module-4.adoc#enable-tracing[Enable Tracing]
+
+* xref:module-5.adoc[5. Combining ambient and sidecar mode]
+** xref:module-5.adoc#create-namespace[Create the namespace]
+** xref:module-5.adoc#create-pod-monitors[Create pod monitors]
+** xref:module-5.adoc#deploy-travel-control-app[Deploy the sidecar application]
