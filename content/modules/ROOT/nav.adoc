@@ -16,3 +16,11 @@
 ** xref:module-2.adoc#install-kiali[Install Kiali]
 ** xref:module-2.adoc#install-ossm-console-plugin[Install the OSSMC Plugin]
 
+* xref:module-3.adoc[3. Install the Distributed Tracing Stack]
+** xref:module-3.adoc#install-minio[Install MinIO Object storage]
+** xref:module-3.adoc#create-namespace[Create the namespace Tempo]
+** xref:module-3.adoc#create-minio-access-for-tempo[Create MinIO secret for Tempo]
+** xref:module-3.adoc#deploy-tempostack[Deploy the Tempo Stack]
+** xref:module-3.adoc#install-otel-collector[Install the OpenTelemetryCollector]
+** xref:module-3.adoc#configure-tracing-in-service-mesh[Configure Tracing in Service Mesh]
+
