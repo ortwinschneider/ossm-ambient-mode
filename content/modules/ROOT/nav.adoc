@@ -1,14 +1,14 @@
-* xref:module-0.adoc[0. Introduction]
+* xref:module-0.adoc[Introduction]
 ** xref:module-0.adoc#about-ambient-mode[About ambient mode]
 ** xref:module-0.adoc#overview[Lab modules overview]
 ** xref:module-0.adoc#prerequisites[Install prerequisites]
 
-* xref:module-1.adoc[1. Install OpenShift Service Mesh Ambient Mode]
+* xref:module-1.adoc[Module 1 - Install OpenShift Service Mesh Ambient Mode]
 ** xref:module-1.adoc#ovn-config[Configure OVN CNI]
 ** xref:module-1.adoc#install-ambient[Install Ambient Mode]
 ** xref:module-1.adoc#verify-installation[Verify the installation]
 
-* xref:module-2.adoc[2. Enable Service Mesh Observability]
+* xref:module-2.adoc[Module 2 - Enable Service Mesh Observability]
 ** xref:module-2.adoc#enable-openshift-user-workload-monitoring[Enable OpenShift user workload monitoring]
 ** xref:module-2.adoc#create-servicemonitor-podmonitors[Create ServiceMonitor and PodMonitors]
 ** xref:module-2.adoc#enable-access-logging[Enable Access Logging]
@@ -16,7 +16,7 @@
 ** xref:module-2.adoc#install-kiali[Install Kiali]
 ** xref:module-2.adoc#install-ossm-console-plugin[Install the OSSMC Plugin]
 
-* xref:module-3.adoc[3. Install the Distributed Tracing Stack]
+* xref:module-3.adoc[Module 3 - Install the Distributed Tracing Stack]
 ** xref:module-3.adoc#install-minio[Install MinIO Object storage]
 ** xref:module-3.adoc#create-namespace[Create the namespace Tempo]
 ** xref:module-3.adoc#create-minio-access-for-tempo[Create MinIO secret for Tempo]
@@ -24,7 +24,7 @@
 ** xref:module-3.adoc#install-otel-collector[Install the OpenTelemetryCollector]
 ** xref:module-3.adoc#configure-tracing-in-service-mesh[Configure Tracing in Service Mesh]
 
-* xref:module-4.adoc[4. Install the demo application and ingress gateway]
+* xref:module-4.adoc[Module 4 - Install the demo application and ingress gateway]
 ** xref:module-4.adoc#create-namespace[Create the namespaces]
 ** xref:module-4.adoc#create-pod-monitors[Create pod monitors]
 ** xref:module-4.adoc#deploy-application-components[Deploy the application components]
@@ -38,12 +38,12 @@
 ** xref:module-4.adoc#observe-application[Observe the application]
 ** xref:module-4.adoc#enable-tracing[Enable Tracing]
 
-* xref:module-5.adoc[5. Combining ambient and sidecar mode]
+* xref:module-5.adoc[Module 5 - Combining ambient and sidecar mode]
 ** xref:module-5.adoc#create-namespace[Create the namespace]
 ** xref:module-5.adoc#create-pod-monitors[Create pod monitors]
 ** xref:module-5.adoc#deploy-travel-control-app[Deploy the sidecar application]
 
-* xref:module-6.adoc[6. Traffic Management]
+* xref:module-6.adoc[Module 6 - Traffic Management]
 ** xref:module-6.adoc#create-waypoints[Create Waypoint proxies]
 ** xref:module-6.adoc#enroll[Enroll namespaces to use waypoints]
 ** xref:module-6.adoc#enable-tracing[Enable Tracing]
@@ -53,3 +53,9 @@
 ** xref:module-6.adoc#traffic-redirect[Traffic Redirect]
 ** xref:module-6.adoc#traffic-rewrite[Traffic Rewrite]
 ** xref:module-6.adoc#transport-mirroring[Transport Mirroring]
+
+* xref:module-7.adoc[Module 7 - Implementing Resilience]
+** xref:module-7.adoc#fault-injection[Fault Injection]
+** xref:module-7.adoc#request-timeouts[Request Timeouts and Retries]
+** xref:module-7.adoc#circuit-breaking[Circuit Breaking]
+** xref:module-7.adoc#outlier-detecting[Outlier Detecting]
