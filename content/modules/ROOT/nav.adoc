@@ -59,3 +59,10 @@
 ** xref:module-7.adoc#request-timeouts[Request Timeouts and Retries]
 ** xref:module-7.adoc#circuit-breaking[Circuit Breaking]
 ** xref:module-7.adoc#outlier-detecting[Outlier Detecting]
+
+* xref:module-8.adoc[Module 8 - Authentication and Authorization]
+** xref:module-8.adoc#enforcing-mtls[Enforcing mTLS]
+** xref:module-8.adoc#validate-mtls-in-ambient-mode[Validate mTLS in Ambient Mode]
+** xref:module-8.adoc#create-level-4-authorization-policy[Create Level 4 Authorization Policy]
+** xref:module-8.adoc#create-level-7-authorization-policy[Create Level 7 Authorization Policy]
+** xref:module-8.adoc#deny-all-policy[ DENY ALL Policy]
