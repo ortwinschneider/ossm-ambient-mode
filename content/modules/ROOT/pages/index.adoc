@@ -3,11 +3,18 @@
 Explore OpenShift Service Mesh - Ambient Mode, based on Istio service mesh without sidecars.
 
 [#about-ambient-mode]
-== About Ambient Mode
+== About this workshop
 
-Istio ambient mode introduces a new way to manage service mesh without using traditional sidecar proxies. The biggest change is how it separates network traffic processing into two distinct layers, which is the core architectural difference. This architecture simplifies networking, reduces resource usage, and improves security while supporting the same service mesh use cases.
+This is a hands-on lab/workshop focused on OpenShift Service Mesh Ambient Mode — a modern service mesh approach on Red Hat OpenShift based on Istio’s ambient mode architecture. 
 
-Ambient mode uses a different data plane architecture that splits traffic processing between a per-node Layer 4 (L4) proxy called Ztunnel (Zero-Trust Tunnel) and an optional Layer 7 (L7) proxy called waypoint proxy.
+NOTE: Ambient mode lets you operate a service mesh without injecting sidecar proxies into every workload, instead using a lightweight per-node proxy (ztunnel) and optional Layer-7 proxies called waypoints — reducing overhead and simplifying adoption.
 
-Ambient Mode also exclusively uses the Kubernetes Gateway API (using Gateway, HTTPRoute, TCPRoute) for its traffic configuration, moving away from Istio's legacy VirtualService and DestinationRule for L7 routing.
+The content is structured as sequential modules that guide you through **setup, observability, tracing, deploying workloads, traffic management, resilience features, and security policies**.
 
+This workshop is mainly for **cloud-native platform engineers, DevOps teams, developers and SREs** who are:
+
+- Deploying or managing service meshes on Red Hat OpenShift.
+- Interested in learning about ambient mode as an alternative to traditional sidecar-based Istio service mesh.
+- Wanting to learn how to observe, secure, trace, and manage traffic in a sidecar-less environment.
+- Hands-on practitioners who can access an OpenShift cluster and execute the lab steps.
+- It assumes familiarity with Kubernetes/OpenShift fundamentals and service mesh concepts before diving into the hands-on modules.

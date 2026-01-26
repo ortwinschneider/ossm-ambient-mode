@@ -6,7 +6,7 @@ nav:
 
 asciidoc:
   attributes:
-    lab_name: "OpenShift Service Mesh Ambient Mode"
+    lab_name: "OpenShift Service Mesh Ambient Mode - Workshop"
     release-version: master
     page-pagination: true
     my_var: "foo"
