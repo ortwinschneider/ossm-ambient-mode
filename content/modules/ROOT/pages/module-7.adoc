@@ -168,7 +168,12 @@ Clean up:
 
 [source,bash,role=execute]
 ----
-oc delete -f 01-fault-injection.yaml 02-request-timeout.yaml
+oc delete -f 01-fault-injection.yaml
+----
+
+[source,bash,role=execute]
+----
+oc delete -f 02-request-timeout.yaml
 ----
 
 [#circuit-breaking]

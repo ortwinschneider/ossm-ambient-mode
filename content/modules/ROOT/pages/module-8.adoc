@@ -299,7 +299,7 @@ spec:
 
 [source,bash,role=execute]
 ----
-oc apply -f 04-deny-all-default-policy.yaml
+oc apply -f 04-deny-all-L7-policy.yaml
 ----
 
 image:deny-all.png[deny-all.png]
