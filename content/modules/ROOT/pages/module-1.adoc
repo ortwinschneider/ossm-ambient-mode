@@ -1,4 +1,4 @@
-= 1. About OpenShift Service Mesh Ambient Mode
+= Module 1: Install OpenShift Service Mesh Ambient Mode
 
 Istio ambient mode introduces a new way to manage service mesh without using traditional sidecar proxies. The biggest change is how it separates network traffic processing into two distinct layers, which is the core architectural difference. This architecture simplifies networking, reduces resource usage, and improves security while supporting the same service mesh use cases.
 
@@ -7,7 +7,7 @@ Ambient mode uses a different data plane architecture that splits traffic proces
 IMPORTANT: Navigate to the subdirectory: `010-ambient-install`
 
 [#ovn-config]
-== 1.1 Configure OVN CNI
+== Task 1: Configure OVN CNI
 
 Configure the OVN-Kubernetes Container Network Interface (CNI) to use local gateway mode by setting the routingViaHost field as true in the gatewayConfig specification for the Cluster Network Operator.
 
@@ -29,7 +29,7 @@ oc patch networks.operator.openshift.io cluster --type=merge -p '{
 This tells OVN-Kubernetes to route pod traffic to the outside world through the node's host networking stack rather than through OVN's distributed gateway routing.
 
 [#install-ambient]
-== 1.2 Installing OpenShift Service Mesh Ambient Mode
+== Task 2: Install OpenShift Service Mesh Ambient Mode
 
 Create the namespaces `istio-system`, `istio-cni` and `ztunnel`:
 
@@ -102,7 +102,7 @@ oc apply -f 03-istio-dataplane.yaml
 ----
 
 [#verify-installation]
-== 1.3 Verify the installation
+== Task 3: Verify the installation
 
 [source,bash,role=execute]
 ----

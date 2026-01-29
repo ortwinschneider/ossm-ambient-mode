@@ -1,4 +1,4 @@
-= 8. Authentication and Authorization
+= Module 8: Authentication and Authorization
 
 In this module we focus on **Authentication and Authorization**: making sure that only trusted workloads can communicate, and that they are only allowed to do what they are supposed to do. In a microservices architecture, security is no longer just about protecting the edge of the system. 
 
@@ -30,7 +30,7 @@ With Istio, authentication and authorization become infrastructure concerns rath
 IMPORTANT: Navigate to the subdirectory: `080-authorization`
 
 [#enforcing-mtls]
-== 8.1 Enforcing mTLS with Peer Authentication
+== Task 1: Enforcing mTLS with Peer Authentication
 
 `PeerAuthentication` is how you tell Istio how strictly services must use mTLS when talking to each other.
 When you set it to STRICT, you are saying:
@@ -62,7 +62,7 @@ spec:
 oc apply -f 01-mtls-default-strict-policy.yaml
 ----
 
-Validate your travel application is still working by looking at:
+Validate that the travel application is still working by looking at:
 
 - Kiali - Traffic Graph
 - Grafana - Service Mesh Overview Dashboard
@@ -73,7 +73,7 @@ But notice, your Travel Demo Business Dashboard in the `travel-control-sidecar` 
 **Why is that??** Do you have an idea?
 
 [#validate-mtls-in-ambient-mode]
-== 8.2 Validate mTLS in Ambient Mode
+==  Task 2: Validate mTLS in Ambient Mode
 
 Ambient mode provides strong workload-to-workload authentication by default using mTLS, without sidecars.
 In Ambient, authentication is handled by the ztunnel layer:
@@ -93,7 +93,7 @@ image:kiali-security.png[kiali-security.png]
 - Looking at the `ztunnel` logs, making sure identities are being used for source and destination
 
 [#create-level-4-authorization-policy]
-== 8.3 Create a Level 4 Authorization Policy
+== Task 3: Create a Level 4 Authorization Policy
 
 The following policy allows only the travel-control service to call the viaggi service.
 
@@ -170,7 +170,7 @@ upstream connect error or disconnect/reset before headers. reset reason: connect
 ----
 
 [#create-level-7-authorization-policy]
-== 8.4 Create a Level 7 Authorization policy
+== Task 4: Create a Level 7 Authorization policy
 
 The following policy is an Istio `AuthorizationPolicy` that defines that the travels service only accepts HTTP `GET` requests and only if they come from the
 `travel-portal` namespace using the `default` service account.
@@ -262,7 +262,7 @@ RBAC: access denied< HTTP/1.1 403 Forbidden
 ----
 
 [#deny-all-policy]
-== 8.5 DENY ALL policy (Optional Challenge)
+== Task 5: DENY ALL policy (Optional Challenge)
 
 In this step we are going to apply a `deny all` policy for the travel-portal namespace, and you need to figure out the necessary `ALLOW` policies to make everything work again.
 

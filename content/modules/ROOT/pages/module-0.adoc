@@ -13,12 +13,8 @@ image::ambient-mode.png[mbient-mode]
 
 Ambient Mode also exclusively uses the Kubernetes Gateway API (using Gateway, HTTPRoute, TCPRoute) for its traffic configuration, moving away from Istio's legacy VirtualService and DestinationRule for L7 routing.
 
-
-[#overview]
-= Lab modules overview
-
 [#prerequisites]
-== 0. Install the prerequisites
+== Task 1: Install the prerequisites
 
 === Operators
 Log in to your OpenShift environment and install the following Operators from Operator Hub:
@@ -64,17 +60,21 @@ git clone https://github.com/ortwinschneider/ossm-playground.git
 
 and navigate to the lab directory `ambient`
 
-== 1. Install OpenShift Service Mesh Ambient Mode
+[#overview]
+== Lab modules overview
+This lab is divided into several modules that guide you through the process of installing, configuring, and using OpenShift Service Mesh in Ambient Mode. Each module focuses on a specific aspect of Ambient Mode, providing hands-on experience and practical knowledge.
+
+== Module 1: Install OpenShift Service Mesh Ambient Mode
 
 Navigate to link:./module-1.html[Install OpenShift Service Mesh Ambient Mode] and follow the instructions.
 
-== 2. Enable Service Mesh Observability
+== Module 2: Enable Service Mesh Observability
 
 Red Hat OpenShift Observability provides real-time visibility, monitoring, and analysis of various system metrics, logs, and events to help you quickly diagnose and troubleshoot issues before they impact systems or applications.
 
 Navigate to link:./module-2.html[Enable Service Mesh Observability] and follow the instructions.
 
-== 3. Install the Distributed Tracing Stack
+== Module 3: Install the Distributed Tracing Stack
 
 You can integrate Red Hat OpenShift Service Mesh with Red Hat OpenShift distributed tracing data collection to instrument, generate, collect, and export OpenTelemetry traces, metrics, and logs to analyze and understand your software’s performance and behavior.
 
@@ -84,9 +84,9 @@ If you want to see traces, you **need to enable the Waypoint Proxies (L7) for th
 
 Navigate to link:./module-3.html[Install the Distributed Tracing Stack] and follow the instructions.
 
-== 4. Install the Kiali Travel demo application in ambient mesh
+== Module 4: Install the Kiali Travel demo application in ambient mesh
 
-This demo application is based on the [Kiali Travel Demo Tutorial](https://kiali.io/docs/tutorials/travels/) and will deploy several services grouped into three namespaces. 
+This demo application is based on the link:https://kiali.io/docs/tutorials/travels/[Kiali Travel Demo Tutorial] and will deploy several services grouped into three namespaces. 
 
 The Travel Demo application simulates two business domains organized in different namespaces.
 
@@ -100,7 +100,7 @@ A main travels service will be the business entry point for the travel agency.
 
 Navigate to link:./module-4.html[Install the Kiali Travel demo application] and follow the instructions.
 
-== 5. Combining ambient and sidecar mode
+== Module 5: Combining ambient and sidecar mode
 
 Istio’s ambient mode is ideal for new mesh deployments. But it can be combined with sidecars within the same mesh.
 The sidecar proxy knows to use the HBONE protocol since the destination has been discovered to be an HBONE destination.
@@ -112,7 +112,7 @@ But the combination comes with some caveats:
 
 Navigate to link:./module-5.html[Combining ambient and sidecar mode] and follow the instructions.
 
-== 6. Traffic Management
+== Module 6: Traffic Management
 
 Ambient Mode provides the full suite of Istio traffic management capabilities through a two-tiered architecture that prioritizes efficiency and incremental adoption.
 The key to traffic management in Ambient Mode is understanding when traffic is handled at Layer 4 (L4) versus when it is escalated to Layer 7 (L7).
@@ -122,7 +122,7 @@ The key to traffic management in Ambient Mode is understanding when traffic is h
 
 Navigate to link:./module-6.html[Traffic Management] and follow the instructions.
 
-== 7. Implementing Resilience
+== Module 7: Implementing Resilience
 
 Istio and OpenShift Service Mesh provides powerful built-in features to implement resilience at the service mesh level, without changing application code. Key features include:
 
@@ -135,7 +135,7 @@ Istio and OpenShift Service Mesh provides powerful built-in features to implemen
 
 Navigate to link:./module-7.html[Implementing Resilience] and follow the instructions.
 
-== 8. Authentication and Authorization
+== Module 8: Authentication and Authorization
 
 Istio provides strong, built-in security capabilities at the service mesh level:
 

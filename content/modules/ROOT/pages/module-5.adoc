@@ -1,13 +1,13 @@
-= 5. Combining ambient and sidecar mode
+= Module 5: Combining ambient and sidecar mode
 
 Istio’s ambient mode is ideal for new mesh deployments. But it can be combined with sidecars, with caveats:
 
 - Existing sidecar meshes will require an update (restart)
 - Traffic between sidecars and ambient workloads will bypass waypoints, meaning only L4 features are applied.
 
-IMPORTANT: **Recommendation: Keep ambient and sidecar workloads in SEPARATE namespaces.**
+IMPORTANT: **Recommendation**: Keep ambient and sidecar workloads in **SEPARATE** namespaces.
 
-== 5.0 About this module
+== About this module
 
 In this module we are going to create a second ingress namespace with the control service inside.
 But the control service uses a sidecar as dataplane and is communicating with the travel portals, which are running in ambient mode.
@@ -15,7 +15,7 @@ But the control service uses a sidecar as dataplane and is communicating with th
 IMPORTANT: Navigate to the subdirectory: `050-ambient-and-sidecar`
 
 [#create-namespace]
-== 5.1 Create the namespace
+== Task 1: Create the namespace
 
 Create the `travel-control-sidecar` namespace with the following command:
 
@@ -40,7 +40,7 @@ The namespace is labeled with the configured istio discovery selector `istio-dis
 Istio will inject sidecars for workloads in this namespace.
 
 [#create-pod-monitors]
-== 5.2 Create pod monitors
+== Task 2: Create pod monitors
 
 PodMonitor objects must be applied in all mesh namespaces:
 
@@ -101,9 +101,9 @@ oc apply -f 02-pod-monitors-create.yaml
 ----
 
 [#deploy-travel-control-app]
-== 5.3 Deploy the travel-control sidecar application component
+== Task 3: Deploy the travel-control sidecar application component
 
-This time we deploy the same Travel control dashboard with sidecar injection.
+This time we deploy the same Travel control dashboard **with sidecar injection**.
 
 [NOTE]
 ====
@@ -123,7 +123,7 @@ spec:
             ISTIO_META_ENABLE_HBONE: "true"
 ----
 
-**Step 1**: Let's apply the travel control deployment and service now:
+=== Step 1: Apply the travel control deployment and service
 
 [source,bash,role=execute]
 ----
@@ -148,14 +148,16 @@ oc get pods -n travel-control-sidecar -o jsonpath="{.items[*].spec.containers[*]
 control istio-proxy
 ----
 
-**Step 2**: Create a Route for this new `Travel Control Dashboard` with: 
+=== Step 2: Create a Route for the `Travel Control Dashboard` 
 
 [source,bash,role=execute]
 ----
 oc apply -f 04-travel-control-route.yaml
 ----
 
-**Step 3**: Get the Travel Control Dashboard URL from the Route by running the following command:
+=== Step 3: Access the Travel Control Dashboard
+
+Get the Travel Control Dashboard URL from the Route by running the following command:
 
 [source,bash,role=execute]
 ----
@@ -164,6 +166,8 @@ echo "https://$(oc get routes -n travel-control-sidecar control-sidecar -o jsonp
 
 Open the Dashboard and verify it is working.
 
-**Step 4**: Also go to Kiali, select the additional `travel-control-sidecar` namespace and watch the `Traffic Graph`:
+=== Step 4: Explore the Traffic Graphs
+
+Also go to Kiali, select the additional `travel-control-sidecar` namespace and watch the `Traffic Graph`:
 
 image:travel-control-sidecar.png[travel-control-sidecar.png]

@@ -1,4 +1,4 @@
-= 6. Traffic Management
+= Module 6: Traffic Management
 
 To gain advanced traffic control, you **must deploy a Waypoint Proxy** for the workload's namespace. The traffic is then routed from the Ztunnel, through the Waypoint Proxy, and finally to the destination workload.
 
@@ -32,7 +32,7 @@ OpenShift Service Mesh provides three core routing techniques:
 - **Path-based routing**: Routes traffic based on the request URI path, enabling API versioning and endpoint-specific routing.
 
 [#create-waypoints]
-== 6.1 Create Waypoint proxies
+== Task 1: Create Waypoint proxies
 
 The waypoint proxy is the place where Istio in ambient mode enforces Layer 7 policies.
 Creating one waypoint per namespace is considered a best practice because it aligns perfectly with Kubernetes’ natural isolation boundary: the namespace.
@@ -76,7 +76,7 @@ oc apply -f 01-waypoints-create.yaml
 ----
 
 [#enroll]
-== 6.2 Enroll the travel application namespaces to use waypoints
+== Task 2: Enroll the travel application namespaces to use waypoints
 
 Now enroll the services in the namespaces to use the waypoints for L7 traffic:
 
@@ -138,7 +138,7 @@ travel-portal          waypoint-travel-portal    172.30.56.159  None            
 ----
 
 [#enable-tracing]
-== 6.3 Enable tracing for the Waypoint proxies
+== Task 3: Enable tracing for the Waypoint proxies
 
 In order to see traces, we have to enable tracing for these two waypoints:
 
@@ -181,7 +181,7 @@ oc apply -f 02_2-enable-tracing.yaml
 ----
 
 [#traffic-splitting]
-== 6.4 Traffic Splitting
+== Task 4: Traffic Splitting
 
 In this section we want to split traffic accross two versions of a service.
 This is useful for A/B tests and canary rollouts.
@@ -240,7 +240,7 @@ oc delete -f 07-traffic-portal-split.yaml
 ----
 
 [#traffic-redirect]
-== 6.5 Traffic Redirect
+== Task 5: Traffic Redirect
 
 We can use a `HTTPRoute` to redirect traffic. In this example we redirect travel requests for Madrid going to the travels API, to Amsterdam.
 
@@ -320,7 +320,7 @@ oc delete -f 08-travel-redirect.yaml
 ----
 
 [#traffic-rewrite]
-== 6.6 Traffic Rewrite
+== Task 6: Traffic Rewrite
 
 Instead of redirecting the client to the new URL, it would be more appropriate to use a rewrite policy in this case.
 First delete the redirect policy:
@@ -396,7 +396,7 @@ oc delete -f 09-travel-rewrite.yaml
 ----
 
 [#transport-mirroring]
-== 6.7 Traffic Mirroring
+== Task 7: Traffic Mirroring
 
 Traffic mirroring (also called shadowing) in Istio means:
 A copy of real production traffic is sent to another service, without affecting the original request or response.
@@ -470,7 +470,7 @@ oc delete -f 010-traffic-mirroring.yaml
 ----
 
 [#scale-waypoints]
-== 6.8 Scaling of Waypoint Proxies
+== Task 8: Scaling of Waypoint Proxies
 
 Waypoints run as standalone workloads, so they can be scaled like any other OpenShift resource.
 
@@ -505,7 +505,7 @@ oc apply -f 03-waypoint-hpa.yaml
 ----
 
 [#pdb-waypoints]
-== 6.9 Pod Disruption Budget for Waypoint Proxies
+== Task 9: Pod Disruption Budget for Waypoint Proxies
 
 We can further increase the availability of waypoints by using PodDisruptionBudgets.
 This PodDisruptionBudget (PDB) is there to protect the waypoint proxy from being taken completely down by voluntary disruptions.

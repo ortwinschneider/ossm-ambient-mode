@@ -1,4 +1,4 @@
-= 3. Install the Distributed Tracing Stack
+= Module 3: Install the Distributed Tracing Stack
 
 You can integrate Red Hat OpenShift Service Mesh with Red Hat OpenShift distributed tracing data collection to instrument, generate, collect, and export OpenTelemetry traces, metrics, and logs to analyze and understand your software’s performance and behavior.
 
@@ -18,7 +18,7 @@ Installing
 
 IMPORTANT: Navigate to the subdirectory: `030-tracing-install`
 
-== 3.0 Prerequisites
+== Prerequisites
 
 Make sure you have installed the following operators:
 
@@ -26,7 +26,7 @@ Make sure you have installed the following operators:
 - Red Hat build of OpenTelemetry (provided by Red Hat)
 
 [#install-minio]  
-== 3.1 Install MinIO Object storage
+== Task 1: Install MinIO Object storage
 
 Object storage is required and not included with the Distributed Tracing Platform. You must choose and set up object storage by a supported provider before installing the Distributed Tracing Platform. 
 
@@ -61,7 +61,7 @@ NOTE: Log in with the **user**: `minio` and **password**: `minio123`
 image:minio.png[MinIO]
 
 [#create-namespace]
-== 3.2 Create the namespace for the Tempo Stack deployment
+== Task 2: Create the namespace for the Tempo Stack deployment
 
 [source,bash,role=execute]
 ----
@@ -69,7 +69,7 @@ oc apply -f 01-namespace.yaml
 ----
 
 [#create-minio-access-for-tempo]
-== 3.3 Create a MinIO access for Tempo Stack
+== Task 3: Create a MinIO access for Tempo Stack
 
 [source,bash,role=execute]
 ----
@@ -77,7 +77,7 @@ oc apply -f 02-minio-secret.yaml
 ----
 
 [#deploy-tempostack]
-== 3.4 Deploy the Tempo Stack
+== Task 4: Deploy the Tempo Stack
 
 This CR creates a simple TempoStack deployment, that exposes the Jaeger UI, which visualizes the data, via a route and uses our MinIO instance for storage of tracing data.
 
@@ -148,7 +148,7 @@ echo "https://$(oc get routes -n tempostack tempo-simplest-query-frontend -o jso
 Follow the URL to open the Jeager Dashboard in your web browser.
 
 [#install-otel-collector]
-== 3.5 Install the OpenTelemetryCollector
+== Task 5: Install the OpenTelemetryCollector
 
 Next, install the `OpenTelemetryCollector` resource in the istio-system namespace.
 This collector will receive traces from Istio and will export them through GRPC to Tempo.
@@ -205,7 +205,7 @@ otel-collector-59798f79d4-gcjxf   1/1     Running   0          82s
 ----
 
 [#configure-tracing-in-service-mesh]
-== 3.6 Configure Tracing in Service Mesh
+== Task 6: Configure Tracing in Service Mesh
 
 Configure Red Hat OpenShift Service Mesh to enable tracing, and define the distributed tracing data collection tracing providers in your meshConfig:
 

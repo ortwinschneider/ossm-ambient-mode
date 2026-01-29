@@ -1,11 +1,21 @@
-= 4. Install the demo application and ingress gateway
+= Module 4: Install the demo application and ingress gateway
 
 This demo application is based on the link:https://kiali.io/docs/tutorials/travels/[Kiali Travel Demo Tutorial] and will deploy several services grouped into three namespaces. 
+
+The Travel Demo application simulates two business domains organized in different namespaces.
+
+- In a first namespace called **travel-portal** there will be deployed several travel shops, where users can search for and book flights, hotels, cars or insurance.
+All the portals consume a service called travels deployed in the travel-agency namespace.
+
+- A second namespace called **travel-agency** will host a set of services created to provide quotes for travel. 
+A main travels service will be the business entry point for the travel agency.
+
+- The **travel-control** namespace runs a business dashboard, that acts as a travel shop simulator and sends requests to the travel portals.
 
 IMPORTANT: Navigate to the subdirectory: `040-travel-demo-app`
 
 [#create-namespace]
-== 4.1 Create the namespaces
+== Task 1: Create the application namespaces
 
 Create the namespaces for the Kiali Travel Demo with the following command:
 
@@ -44,7 +54,7 @@ oc apply -f 01_1-ns-create.yaml
 The namespaces are labeled with the configured istio discovery selector.
 
 [#create-pod-monitors]
-== 4.2 Create pod monitors
+== Task 2: Create pod monitors
 
 PodMonitor objects must be applied in all mesh namespaces:
 
@@ -54,9 +64,9 @@ oc apply -f 01_2-pod-monitors-create.yaml
 ----
 
 [#deploy-application-components]
-== 4.3 Deploy the application components
+== Task 3: Deploy the application components
 
-**Step 1**: Deploy the `travel-agency` components with: 
+=== Step 1: Deploy the `travel-agency` components 
 
 [source,bash,role=execute]
 ----
@@ -82,7 +92,7 @@ deployment.apps/travels-v1 created
 service/travels created
 ----
 
-**Step 2**: Deploy the `travel-portal` components with: 
+=== Step 2: Deploy the `travel-portal` components 
 
 [source,bash,role=execute]
 ----
@@ -99,7 +109,7 @@ deployment.apps/travels created
 service/travels created
 ----
 
-**Step 3**: Deploy the `travel-control` components with: 
+=== Step 3: Deploy the `travel-control` components
 
 [source,bash,role=execute]
 ----
@@ -112,7 +122,7 @@ deployment.apps/control created
 service/control created
 ----
 
-**Step 4**: Create a Route for the `Travel Control Dashboard` with: 
+=== Step 4: Create a Route for the `Travel Control Dashboard`
 
 [source,bash,role=execute]
 ----
@@ -133,7 +143,7 @@ IMPORTANT: **Please keep the browser window open so that you continuously send r
 image:travel-control-dashboard.png[travel-control-dashboard.png]
 
 [#add-application-to-ambient-mesh]
-== 4.4 Add the application to the Ambient Mesh
+== Task 4: Add the application to the Ambient Mesh
 
 [IMPORTANT]
 ====
@@ -215,9 +225,9 @@ It is the custom tunneling protocol Istio Ambient Mesh uses to transport traffic
 
 After the label is applied, all L4 traffic to and from the ambient mesh is intercepted and secured via mutual TLS (mTLS) by the ztunnel. 
 
-NOTE: Congratulations! You have successfully added the Travel Demo to ambient mesh. No further configuration is required and also no restart of the workloads.
+NOTE: **Congratulations! You have successfully added the Travel Demo to ambient mesh.** No further configuration is required and also no restart of the workloads.
 
-== When do I need Waypoint Proxies?
+== What about Waypoint Proxies?
 
 You can add a waypoint proxy if workloads require any of the following L7 capabilities:
 
@@ -233,51 +243,40 @@ You can add a waypoint proxy if workloads require any of the following L7 capabi
 - HTTP metrics, access logging, and tracing for application traffic
 ====
 
-[#create-waypoint]
-== 4.5 Create a Waypoint Proxy
+== Task 5: Configuring Ingress for the Travel Demo application 
 
-Istio is sending traffic from a gateway to the destination directly, even if that specific destination is enrolled in a waypoint.
+As of now, we have exposed the Travel Control Dashboard with an OpenShift route that **sends traffic directly to the control service in plaintext**.
 
-We can enable ingress waypoint routing on a service, such that traffic will be sent from the gateway to the configured waypoint, not to the destination service. 
+In the next section, we will configure an Ingress Gateway in the Ambient Mesh to securely expose the Travel demo application.
 
-So, first create a Waypoint Proxy.
+The objective is to configure the following setup: 
 
-[source,yaml]
-----
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: travel-control-waypoint
-  namespace: travel-control
-  labels:
-    istio.io/waypoint-for: service
-spec:
-  gatewayClassName: istio-waypoint
-  listeners:
-  - name: mesh
-    port: 15008
-    protocol: HBONE             
-----
+```
+External traffic (TLS)-> Ingress Gateway (mTLS)-> Waypoint Proxy (mTLS)-> control service.
+```
 
-[source,bash,role=execute]
-----
-oc apply -f 04_1-control-waypoint-create.yaml
-----
+[NOTE]
+====
+In this setup, it is recommended to:
 
-[#label-the-travel-control-namespace]
-== 4.6 Label the travel-control namespace to use the waypoint
-
-Now label the namespace to enroll the services in the waypoint.
-
-[source,bash,role=execute]
-----
-oc apply -f 04_2-label-ns-for-waypoint.yaml
-----
+- apply minimal routing logic at the Ingress Gateway and
+- apply all the other logic and policies at the waypoint proxy.
+====
 
 [#create-ingress-gateway]
-== 4.7 Create an Ingress Gateway
+=== Step 1: Create an Ingress Gateway
+A gateway resource configures a load balancer to receive incoming traffic from outside the mesh or send traffic outside the mesh. It defines ports, protocols, and accepted hosts.
 
-The following configuration is defining a basic `Ingress Gateway` and an `HTTPRoute` using the Kubernetes Gateway API, which Istio fully supports and implements. It's essentially setting up a public entry point for HTTP traffic and routing all incoming requests to the control service.
+The gateway resource defines the following attributes:
+
+- Port configuration: number, name, protocol
+- Accepted hostnames: can use wildcards
+- TLS settings: for HTTPS traffic
+- Selector: to specify which gateway pods apply this configuration
+
+NOTE: A gateway by itself does not route traffic to backend services. You must bind a `HTTPRoute` or virtual service to the gateway to define routing rules.
+
+The following configuration is defining a basic `Ingress Gateway` and an `HTTPRoute` using the Kubernetes Gateway API, which Istio fully supports and implements. It's essentially setting up the public entry point for HTTP traffic and routing all incoming requests to the control service.
 
 [source,yaml]
 ----
@@ -319,11 +318,84 @@ spec:
 oc apply -f 04_3-ingress-gateway-create.yaml
 ----
 
+[#create-waypoint]
+=== Step 2: Create a Waypoint Proxy
+
+Create a waypoint proxy in the `travel-control` namespace:
+
+[source,yaml]
+----
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: travel-control-waypoint
+  namespace: travel-control
+  labels:
+    istio.io/waypoint-for: service
+spec:
+  gatewayClassName: istio-waypoint
+  listeners:
+  - name: mesh
+    port: 15008
+    protocol: HBONE             
+----
+
+[source,bash,role=execute]
+----
+oc apply -f 04_1-control-waypoint-create.yaml
+----
+
+[#label-the-travel-control-namespace]
+=== Step 3: Label the travel-control namespace to use the waypoint
+
+Now label the namespace to enroll all services in the `travel-control` namespace to use this waypoint.
+
+[source,bash]
+----
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    istio-discovery: enabled
+    istio.io/dataplane-mode: ambient
+    istio.io/use-waypoint: travel-control-waypoint
+  name: travel-control
+spec: {}
+----
+
+[source,bash,role=execute]
+----
+oc apply -f 04_2-label-ns-for-waypoint.yaml
+----
+
 [#label-control-service]
-== 4.8 Label the control service
+=== Step 4: Label the control service
+
+NOTE: Istio is sending traffic from the ingress gateway to the destination directly, even if that specific destination is enrolled in a waypoint.
+
+We can enable `ingress waypoint routing` on a service, such that traffic will be sent from the ingress gateway to the configured waypoint first, not to the destination service. 
 
 In order to enable ingress waypoint routing, label the control service.
-The traffic entering the Ingress Gateway will now be forwarded to the Waypoint proxy for L7 policy enforcement.
+
+The traffic entering the Ingress Gateway will then be forwarded to the Waypoint proxy for L7 policy enforcement.
+
+[source,bash]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: control
+  namespace: travel-control
+  labels:
+    app: control
+    istio.io/ingress-use-waypoint: "true"
+spec:
+  ports:
+    - name: http
+      port: 8080
+  selector:
+    app: control
+----
 
 [source,bash,role=execute]
 ----
@@ -331,14 +403,9 @@ oc apply -f 04_4-label-ingress-use-waypoint.yaml
 ----
 
 [#create-waypoint-routing]
-== 4.9 Create an Ingress Waypoint policy
+=== Step 5: Create an example waypoint policy
 
-In this setup (External traffic -> Ingress Gateway -> Waypoint Proxy -> control service), it is recommended to
-
-- apply minimal routing logic at the Ingress Gateway and
-- apply all the other logic at the waypoint
-
-Deploy a routing policy that is enforced at the waypoint proxy:
+Deploy an example routing policy that is enforced at the ingress waypoint proxy:
 
 [source,bash,role=execute]
 ----
@@ -346,9 +413,9 @@ oc apply -f 05_1-waypoint-routing.yaml
 ----
 
 [#expose-ingress-gateway]
-== 4.10 Expose the Ingress Gateway
+=== Step 6: Expose the Ingress Gateway
 
-Expose the Ingress Gateway with an OpenShift Route:
+In the last step, expose the Ingress Gateway with an OpenShift Route to be accessible from outside the cluster:
 
 [source,bash,role=execute]
 ----
@@ -362,10 +429,10 @@ You can now access the Travel Control Dashboard through the Service Mesh Ingress
 echo "https://$(oc get routes -n travel-control travel-gateway -o jsonpath='{.spec.host}')"
 ----
 
-NOTE: **Please keep the browser window open so that you continuously send requests to the backend.**
+NOTE: **Again, please keep the browser window open so that you continuously send requests to the backend.**
 
 [#observe-application]
-== 4.11 Observe the Travel Demo application
+==  Task 6: Observe the Travel Demo application
 
 Go to Kiali or use the Service Mesh Console plugin to observe the traffic of the Travel Demo application. Navigate to **Service Mesh -> Traffic Graph**, select the 3 travel demo namespaces and have a look at the `Versioned app graph`
 
@@ -380,7 +447,9 @@ In the OpenShift Console, go to Observe -> Metrics and run the query: `istio_tcp
 image:ocp-ossm-metrics.png[ocp-ossm-metrics.png]
 
 [#enable-tracing]
-== 4.12 Enable Tracing for the Ingress Gateway and Waypoint Proxy
+==  Task 7: Enable Tracing for the Ingress Gateway and Waypoint Proxy
+
+In order to see traces, we have to enable tracing for the ingress gateway and the waypoint proxy:
 
 [source,yaml]
 ----
