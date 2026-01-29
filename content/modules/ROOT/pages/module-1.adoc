@@ -26,6 +26,8 @@ oc patch networks.operator.openshift.io cluster --type=merge -p '{
 }'
 ----
 
+This tells OVN-Kubernetes to route pod traffic to the outside world through the node's host networking stack rather than through OVN's distributed gateway routing.
+
 [#install-ambient]
 == 1.2 Installing OpenShift Service Mesh Ambient Mode
 

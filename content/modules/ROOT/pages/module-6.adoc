@@ -5,24 +5,36 @@ To gain advanced traffic control, you **must deploy a Waypoint Proxy** for the w
 The following section describes some advanced traffic control capabilities:
 
 - **Traffic Splitting**: Uses `Waypoint` Proxy
-  - Percentage-based routing (e.g., 90% to V1, 10% to V2).
+  * Percentage-based routing (e.g., 90% to V1, 10% to V2).
 - **Header-Based Routing**:	Uses `Waypoint` Proxy	
-  - Route traffic based on HTTP headers 
+  * Route traffic based on HTTP headers 
 - **Traffic Mirroring**: Uses `Waypoint` Proxy
-  - Shadowing a percentage of live traffic to a test service.
+  * Shadowing a percentage of live traffic to a test service.
 - **Fault Injection:** Uses `Waypoint` Proxy
-  - Injecting artificial delays or HTTP failure codes for resilience testing.
+  * Injecting artificial delays or HTTP failure codes for resilience testing.
 - **L4 Load Balancing**: Uses `Ztunnel` Only 
-  - Basic connection-level balancing (default behavior).
+  * Basic connection-level balancing (default behavior).
 - **Timeouts/Retries**: Uses `Waypoint` Proxy
-  - Configuring application-level request timeouts and retries on failure.
+  * Configuring application-level request timeouts and retries on failure.
 
 IMPORTANT: Navigate to the subdirectory: `060-traffic-management`
+
+== About Traffic Routing
+
+Traffic routing is essential for strategies such as canary releases, A/B testing, and blue-green deployments. 
+
+OpenShift Service Mesh provides three core routing techniques:
+
+- **Weighted routing**: Distributes traffic across service versions based on percentage allocations, enabling controlled rollouts and gradual migrations.
+
+- **Header-based routing**: Routes traffic based on HTTP request headers, supporting user segmentation and feature flags.
+
+- **Path-based routing**: Routes traffic based on the request URI path, enabling API versioning and endpoint-specific routing.
 
 [#create-waypoints]
 == 6.1 Create Waypoint proxies
 
-The waypoint proxy is the place where Istio enforces Layer 7 policies.
+The waypoint proxy is the place where Istio in ambient mode enforces Layer 7 policies.
 Creating one waypoint per namespace is considered a best practice because it aligns perfectly with Kubernetes’ natural isolation boundary: the namespace.
 
 Create a waypoint for the `travel-portal` and `travel-agency` namespace:
@@ -168,71 +180,8 @@ spec:
 oc apply -f 02_2-enable-tracing.yaml
 ----
 
-[#scale-waypoints]
-== 6.4 Scaling of Waypoint Proxies
-
-Waypoints run as standalone workloads, so they can be scaled like any other OpenShift resource.
-
-We use a Horizontal Pod Autoscaler for the travel portal waypoint Deployment and specify replicas between 2 and 5:
-
-[source,yaml]
-----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: waypoint-travel-portal-hpa
-  namespace: travel-portal
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: waypoint-travel-portal
-  minReplicas: 2
-  maxReplicas: 5
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 50
-----
-
-[source,bash,role=execute]
-----
-oc apply -f 03-waypoint-hpa.yaml
-----
-
-[#pdb-waypoints]
-== 6.5 Pod Disruption Budget for Waypoint Proxies
-
-We can further increase the availability of waypoints by using PodDisruptionBudgets.
-This PodDisruptionBudget (PDB) is there to protect the waypoint proxy from being taken completely down by voluntary disruptions.
-Your waypoint is critical because it is the L7 enforcement point.
-
-With this PDB, OpenShift must always keep at least one waypoint pod running.
-
-[source,yaml]
-----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: waypoint-travel-portal-pdb
-  namespace: travel-portal
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      gateway.networking.k8s.io/gateway-name: waypoint-travel-portal
-----
-
-[source,bash,role=execute]
-----
-oc apply -f 04-waypoint-pdb.yaml
-----
-
 [#traffic-splitting]
-== 6.6 Traffic Splitting
+== 6.4 Traffic Splitting
 
 In this section we want to split traffic accross two versions of a service.
 This is useful for A/B tests and canary rollouts.
@@ -291,7 +240,7 @@ oc delete -f 07-traffic-portal-split.yaml
 ----
 
 [#traffic-redirect]
-== 6.7 Traffic Redirect
+== 6.5 Traffic Redirect
 
 We can use a `HTTPRoute` to redirect traffic. In this example we redirect travel requests for Madrid going to the travels API, to Amsterdam.
 
@@ -371,7 +320,7 @@ oc delete -f 08-travel-redirect.yaml
 ----
 
 [#traffic-rewrite]
-== 6.8 Traffic Rewrite
+== 6.6 Traffic Rewrite
 
 Instead of redirecting the client to the new URL, it would be more appropriate to use a rewrite policy in this case.
 First delete the redirect policy:
@@ -447,7 +396,7 @@ oc delete -f 09-travel-rewrite.yaml
 ----
 
 [#transport-mirroring]
-== 6.9 Traffic Mirroring
+== 6.7 Traffic Mirroring
 
 Traffic mirroring (also called shadowing) in Istio means:
 A copy of real production traffic is sent to another service, without affecting the original request or response.
@@ -518,4 +467,67 @@ Clean up:
 [source,bash,role=execute]
 ----
 oc delete -f 010-traffic-mirroring.yaml
+----
+
+[#scale-waypoints]
+== 6.8 Scaling of Waypoint Proxies
+
+Waypoints run as standalone workloads, so they can be scaled like any other OpenShift resource.
+
+We use a Horizontal Pod Autoscaler for the travel portal waypoint Deployment and specify replicas between 2 and 5:
+
+[source,yaml]
+----
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: waypoint-travel-portal-hpa
+  namespace: travel-portal
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: waypoint-travel-portal
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+----
+
+[source,bash,role=execute]
+----
+oc apply -f 03-waypoint-hpa.yaml
+----
+
+[#pdb-waypoints]
+== 6.9 Pod Disruption Budget for Waypoint Proxies
+
+We can further increase the availability of waypoints by using PodDisruptionBudgets.
+This PodDisruptionBudget (PDB) is there to protect the waypoint proxy from being taken completely down by voluntary disruptions.
+Your waypoint is critical because it is the L7 enforcement point.
+
+With this PDB, OpenShift must always keep at least one waypoint pod running.
+
+[source,yaml]
+----
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: waypoint-travel-portal-pdb
+  namespace: travel-portal
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      gateway.networking.k8s.io/gateway-name: waypoint-travel-portal
+----
+
+[source,bash,role=execute]
+----
+oc apply -f 04-waypoint-pdb.yaml
 ----
