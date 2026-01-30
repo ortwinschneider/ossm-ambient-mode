@@ -7,6 +7,7 @@
 * xref:module-3.adoc[Module 3 - Install the Distributed Tracing Stack]
 
 * xref:module-4.adoc[Module 4 - Install the demo application and ingress gateway]
+** xref:module-4-about.adoc[Understanding the Travel Demo Application]
 
 * xref:module-5.adoc[Module 5 - Combining ambient and sidecar mode]
 

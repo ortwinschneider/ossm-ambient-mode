@@ -2,15 +2,7 @@
 
 This demo application is based on the link:https://kiali.io/docs/tutorials/travels/[Kiali Travel Demo Tutorial] and will deploy several services grouped into three namespaces. 
 
-The Travel Demo application simulates two business domains organized in different namespaces.
-
-- In a first namespace called **travel-portal** there will be deployed several travel shops, where users can search for and book flights, hotels, cars or insurance.
-All the portals consume a service called travels deployed in the travel-agency namespace.
-
-- A second namespace called **travel-agency** will host a set of services created to provide quotes for travel. 
-A main travels service will be the business entry point for the travel agency.
-
-- The **travel-control** namespace runs a business dashboard, that acts as a travel shop simulator and sends requests to the travel portals.
+NOTE: To get a better understanding of the application architecture and components used throughout the lab, please refer to the following page: xref:module-4-about.adoc[Understanding the Travel Demo Application]
 
 IMPORTANT: Navigate to the subdirectory: `040-travel-demo-app`
 
@@ -227,6 +219,12 @@ After the label is applied, all L4 traffic to and from the ambient mesh is inter
 
 NOTE: **Congratulations! You have successfully added the Travel Demo to ambient mesh.** No further configuration is required and also no restart of the workloads.
 
+I takes a few minutes until metrics are visible in the Service Mesh Console or Kiali.
+
+Go to Kiali or use the Service Mesh Console plugin to observe the traffic of the Travel Demo application. Navigate to **Service Mesh -> Traffic Graph**, select the 3 travel demo namespaces and have a first look at the `Versioned app graph`:
+
+image:kiali-initial-traffic-graph.png[kiali-initial-traffic-graph.png]
+
 == What about Waypoint Proxies?
 
 You can add a waypoint proxy if workloads require any of the following L7 capabilities:
@@ -431,6 +429,13 @@ echo "https://$(oc get routes -n travel-control travel-gateway -o jsonpath='{.sp
 
 NOTE: **Again, please keep the browser window open so that you continuously send requests to the backend.**
 
+Clean up the previous route to the control service:
+
+[source,bash,role=execute]
+----
+oc delete -f 02_4-travel-control-route.yaml
+----
+
 [#observe-application]
 ==  Task 6: Observe the Travel Demo application
 
@@ -449,7 +454,12 @@ image:ocp-ossm-metrics.png[ocp-ossm-metrics.png]
 [#enable-tracing]
 ==  Task 7: Enable Tracing for the Ingress Gateway and Waypoint Proxy
 
-In order to see traces, we have to enable tracing for the ingress gateway and the waypoint proxy:
+The following Telemetry resources configure tracing for the `travel-gateway` and `travel-control-waypoint` in the travel-control namespace.
+
+It tells Istio to use the OpenTelemetry provider named otel when emitting traces.
+
+It enables probabilistic sampling, capturing 50% of requests that pass through that Gateway or waypoint.
+Other workloads or gateways are not affected unless they have their own Telemetry config.
 
 [source,yaml]
 ----
@@ -488,3 +498,9 @@ spec:
 ----
 oc apply -f 07-enable-tracing.yaml
 ----
+
+After a few minutes, you should be able to see traces in the Jaeger UI:
+
+image:jaeger-traces.png[jaeger-traces.png]
+
+NOTE: Congratulations! You have successfully deployed the Kiali Travel Demo application in Ambient Mesh with an Ingress Gateway and Waypoint Proxy!
