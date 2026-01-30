@@ -168,6 +168,19 @@ Open the Dashboard and verify it is working.
 
 === Step 4: Explore the Traffic Graphs
 
-Also go to Kiali, select the additional `travel-control-sidecar` namespace and watch the `Traffic Graph`:
+NOTE: Whenever you make changes in the Travel Portal application, it takes some time until Kiali picks up the metrics from the user-workload-monitoring and you actually see the changes.
+
+Go to Kiali, select the additional `travel-control-sidecar` namespace and watch the `Traffic Graph`:
 
 image:travel-control-sidecar.png[travel-control-sidecar.png]
+
+== Task 4: Clean up
+
+Delete the `travel-control-sidecar` namespace:
+
+[source,bash,role=execute]
+----
+oc delete project travel-control-sidecar
+----
+
+NOTE: Congratulations! You have completed Module 5: Combining ambient and sidecar mode.
