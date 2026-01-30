@@ -30,7 +30,7 @@ Make sure you have installed the following operators:
 
 Object storage is required and not included with the Distributed Tracing Platform. You must choose and set up object storage by a supported provider before installing the Distributed Tracing Platform. 
 
-We are going to install MinIO for this demo:
+We are going to install MinIO for this workshop:
 
 [source,bash,role=execute]
 ----
@@ -49,6 +49,36 @@ route.route.openshift.io/minio-ui created
 job.batch/create-minio-buckets created
 ----
 
+Wait until the MinIO deployment is ready by running the following command:
+
+[source,bash,role=execute]
+----
+oc get all -n minio
+----
+
+[source,bash]
+----
+NAME                             READY   STATUS      RESTARTS   AGE
+pod/create-minio-buckets-xf64r   0/1     Completed   0          70s
+pod/minio-68bcd4565-45kt8        1/1     Running     0          71s
+
+NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE
+service/minio-service   ClusterIP   172.30.90.153   <none>        9000/TCP,9090/TCP   71s
+
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/minio   1/1     1            1           71s
+
+NAME                              DESIRED   CURRENT   READY   AGE
+replicaset.apps/minio-68bcd4565   1         1         1       71s
+
+NAME                             STATUS     COMPLETIONS   DURATION   AGE
+job.batch/create-minio-buckets   Complete   1/1           33s        70s
+
+NAME                                 HOST/PORT                            PATH   SERVICES        PORT   TERMINATION     WILDCARD
+route.route.openshift.io/minio-api   minio-api-minio.apps.ocp4.rhlab.de          minio-service   api    edge/Redirect   None
+route.route.openshift.io/minio-ui    minio-ui-minio.apps.ocp4.rhlab.de           minio-service   ui     edge/Redirect   None
+----
+
 When MinIO is ready, get the MinIO UI URL from the Route by running the following command:
 
 [source,bash,role=execute]
@@ -62,6 +92,9 @@ image:minio.png[MinIO]
 
 [#create-namespace]
 == Task 2: Create the namespace for the Tempo Stack deployment
+TempoStack is Red Hat’s supported distribution of Grafana Tempo, a distributed tracing backend. It stores and indexes traces in a cost-efficient, object-storage-friendly way (S3, GCS, etc.) and is designed to scale without needing heavy indexing like traditional tracing systems.
+
+Create a new namespace for the Tempo Stack deployment:
 
 [source,bash,role=execute]
 ----
@@ -70,6 +103,8 @@ oc apply -f 01-namespace.yaml
 
 [#create-minio-access-for-tempo]
 == Task 3: Create a MinIO access for Tempo Stack
+
+Tempo Stack needs access to the MinIO instance to store tracing data. Create a secret in the `tempostack` namespace with the MinIO access credentials:
 
 [source,bash,role=execute]
 ----
@@ -114,11 +149,36 @@ spec:
 oc apply -f 03-tempostack.yaml
 ----
 
-Verify that the status of all TempoStack components is Running and the conditions are type: Ready by running the following command:
+Verify that the status of all TempoStack components is `Running` and the conditions are type: Ready by running the following command:
 
 [source,bash,role=execute]
 ----
 oc get tempostacks.tempo.grafana.com simplest -n tempostack -o yaml
+----
+
+[source,bash]
+----
+status:
+  components:
+    compactor:
+      Running:
+      - tempo-simplest-compactor-66b5d4d9f8-s8t9d
+      - tempo-simplest-compactor-69fb86dbd7-5q9kx
+    distributor:
+      Running:
+      - tempo-simplest-distributor-5d94c84f4b-dqpwq
+    gateway: {}
+    ingester:
+      Running:
+      - tempo-simplest-ingester-0
+    querier:
+      Running:
+      - tempo-simplest-querier-95c8cb75-bpccz
+      - tempo-simplest-querier-7bf85d9cd4-g6zpj
+    queryFrontend:
+      Running:
+      - tempo-simplest-query-frontend-57bbc44c48-rbsg4
+      - tempo-simplest-query-frontend-6cb7ddc4f-z69m8
 ----
 
 Verify that all the TempoStack component pods are running by running the following command:
@@ -147,11 +207,13 @@ echo "https://$(oc get routes -n tempostack tempo-simplest-query-frontend -o jso
 
 Follow the URL to open the Jeager Dashboard in your web browser.
 
+image:jaeger-dashboard.png[jaeger-dashboard.png]
+
 [#install-otel-collector]
 == Task 5: Install the OpenTelemetryCollector
 
 Next, install the `OpenTelemetryCollector` resource in the istio-system namespace.
-This collector will receive traces from Istio and will export them through GRPC to Tempo.
+This collector will receive traces from Istio and will export them through GRPC to Tempo Stack.
 
 [source,yaml]
 ----
@@ -189,6 +251,8 @@ spec:
 oc apply -f 04-otel-collector.yaml
 ----
 
+Check that the OpenTelemetry Collector pod is running by running the following command:
+
 [source,bash,role=execute]
 ----
 oc get pods -n istio-system
@@ -224,8 +288,8 @@ spec:
       trustedZtunnelNamespace: ztunnel
     profile: ambient
     meshConfig:
-      enableTracing: true
-      extensionProviders:
+      enableTracing: true          <1>
+      extensionProviders:          <2> 
       - name: otel
         opentelemetry:
           port: 4317
@@ -235,7 +299,12 @@ spec:
           istio-discovery: enabled
 ----
 
+<1> enableTracing: true - Enables tracing in the mesh configuration.
+<2> extensionProviders - Defines the OpenTelemetry collector as the tracing provider for the service mesh.
+
 [source,bash,role=execute]
 ----
 oc apply -f 05-istio-update.yaml
 ----
+
+NOTE: Congratulations! You have successfully installed and configured the Distributed Tracing Stack with Red Hat OpenShift Service Mesh. 

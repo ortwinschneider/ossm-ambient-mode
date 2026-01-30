@@ -136,3 +136,5 @@ oc get daemonset -n ztunnel
 NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
 ztunnel   3         3         3       3            3           kubernetes.io/os=linux   2m24s
 ----
+
+NOTE: Congratulations! You have successfully installed Red Hat OpenShift Service Mesh in Ambient Mode.

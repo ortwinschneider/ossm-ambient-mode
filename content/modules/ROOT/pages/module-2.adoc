@@ -236,7 +236,22 @@ spec:
 oc apply -f 05-kiali.yaml
 ----
 
-When the Kiali resource is ready, get the Kiali URL from the Route by running the following command:
+Wait a few seconds until Kiali is ready. 
+
+[source,bash,role=execute]
+----
+oc get pods -n istio-system
+----
+
+[source,bash]
+----
+NAME                       READY   STATUS    RESTARTS   AGE
+grafana-6b6dfdf46c-6lmks   1/1     Running   0          6m29s
+istiod-685b946668-tnh46    1/1     Running   0          8m49s
+kiali-6c6764bdf8-c9zf7     1/1     Running   0          2m33s
+----
+
+When the Kiali deployment is ready, get the Kiali URL from the Route by running the following command:
 
 [source,bash,role=execute]
 ----
@@ -244,6 +259,8 @@ echo "https://$(oc get routes -n istio-system kiali -o jsonpath='{.spec.host}')"
 ----
 
 Follow the URL to open Kiali in your web browser.
+
+image:kiali-dashboard.png[kiali-dashboard.png]
 
 [#install-ossm-console-plugin]
 == Task 6: Install the OpenShift Service Mesh Console Plugin
@@ -259,8 +276,10 @@ Now install the Service Mesh Console (OSSMC) plugin:
 oc apply -f 06-ossm-console.yaml
 ----
 
-NOTE: The **OpenShift Console pods will restart** after a few minutes and you have to login to OpenShift again.
+NOTE: The **OpenShift Console pods will restart** after a few seconds and you might have to login to OpenShift again.
 
 Verify that the Service Mesh category is added in the main OpenShift Container Platform web console navigation.
 
-image::ossm-console-plugin.png[ossm-console-plugin.png]
+image:ossm-console-plugin.png[ossm-console-plugin.png]
+
+NOTE: Congratulations! You have successfully installed and configured observability for Red Hat OpenShift Service Mesh in Ambient Mode.
