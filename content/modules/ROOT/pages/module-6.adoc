@@ -186,18 +186,18 @@ oc apply -f 02_2-enable-tracing.yaml
 In this section we want to split traffic accross two versions of a service.
 This is useful for A/B tests and canary rollouts.
 
-**Step 1:** Create a second version of the voyages portal deployment:
+**Step 1:** Create a second version of the cars service deployment:
 
 [source,bash,role=execute]
 ----
-oc apply -f 05-travel-portal-app-v2.yaml
+oc apply -f 05-cars-app-v2.yaml
 ----
 
 **Step 2:** Create Kubernetes services for version v1 and v2:
 
 [source,bash,role=execute]
 ----
-oc apply -f 06-travel-portal-services.yaml
+oc apply -f 06-cars-services.yaml
 ----
 
 **Step 3:** Apply a traffic splitting policy:
@@ -207,42 +207,45 @@ oc apply -f 06-travel-portal-services.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: voyages-traffic-route
-  namespace: travel-portal
+  name: cars-traffic-split
+  namespace: travel-agency
 spec:
   parentRefs:
   - group: ""
     kind: Service
-    name: voyages
+    name: cars
     port: 8000
   rules:
   - backendRefs:
-    - name: voyages-v1
+    - name: cars-v1
       port: 8000
       weight: 70
-    - name: voyages-v2
+    - name: cars-v2
       port: 8000
       weight: 30
 ----
 
 [source,bash,role=execute]
 ----
-oc apply -f 07-traffic-portal-split.yaml
+oc apply -f 07-cars-traffic-split.yaml
 ----
 
 **Step 4:** Observe the traffic splitting in Kiali
+
+image:traffic-splitting.png[Traffic Splitting in Kiali]
 
 Clean up:
 
 [source,bash,role=execute]
 ----
-oc delete -f 07-traffic-portal-split.yaml
+oc delete -f 07-cars-traffic-split.yaml
 ----
 
 [#traffic-redirect]
 == Task 5: Traffic Redirect
 
-We can use a `HTTPRoute` to redirect traffic. In this example we redirect travel requests for Madrid going to the travels API, to Amsterdam.
+We can use a `HTTPRoute` to redirect traffic. 
+In this scenario we redirect travel requests for Madrid going to the `travels` API service, to Amsterdam.
 
 First make a request for Madrid:
 
@@ -323,9 +326,8 @@ oc delete -f 08-travel-redirect.yaml
 == Task 6: Traffic Rewrite
 
 Instead of redirecting the client to the new URL, it would be more appropriate to use a rewrite policy in this case.
-First delete the redirect policy:
 
-Now create the rewrite policy:
+Create the rewrite policy:
 
 [source,yaml]
 ----
@@ -361,7 +363,7 @@ spec:
 oc apply -f 09-travel-rewrite.yaml
 ----
 
-No send a request for Madrid again, and you'll get back the data for Amsterdam:
+Now send a request for Madrid again, and you'll get back the data for Amsterdam:
 
 [source,bash,role=execute]
 ----
@@ -414,13 +416,42 @@ Client
 No extra latency is added to the client path, because Istio does not wait for the mirror.
 
 Typical use cases:
+
 - Testing a new version in production
 - Performance Benchmarking
 - Migration of services (runtimes, databases, switching cloud providers)
 - API contract validation
 
-In our use case we have already two versions of the travel portal `voyages` deployed in the `travel-portal` namespace.
+In our scenario we have already two versions of the `cars` service deployed in the `travel-agency` namespace.
 Make sure you have cleaned up the traffic splitting policy.
+
+The following policy will mirror 100% of the traffic going to the `cars` service to the `cars-v2` service.
+
+[source,yaml]
+----
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: traffic-mirroring-cars-v2
+  namespace: travel-agency
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: cars
+    port: 8000
+  rules:
+  - filters:
+    - type: RequestMirror
+      requestMirror:
+        percentage: 100
+        backendRef:
+          name: cars-v2
+          port: 8000
+    backendRefs:
+    - name: cars
+      port: 8000
+----
 
 Create the mirroring policy:
 
@@ -429,38 +460,16 @@ Create the mirroring policy:
 oc apply -f 010-traffic-mirroring.yaml
 ----
 
-[source,yaml]
-----
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: voyages-traffic-mirroring
-  namespace: travel-portal
-spec:
-  parentRefs:
-  - group: ""
-    kind: Service
-    name: voyages
-    port: 8000
-  rules:
-  - filters:
-    - type: RequestMirror
-      requestMirror:
-        percentage: 50
-        backendRef:
-          name: voyages-v2
-          port: 8000
-    backendRefs:
-    - name: voyages
-      port: 8000
-----
-
-Now check the logs of the voyages-v2 pods. You should see incoming requests:
+Now check the logs of the cars-v2 pods. You should see incoming requests:
 
 [source,bash,role=execute]
 ----
-oc logs --follow -n travel-portal deployment/voyages-v2
+oc logs --follow -n travel-agency deployment/cars-v2
 ----
+
+In Kiali you won't see incoming traffic, but outgoing traffic for the `cars-v2` service. 
+
+image:traffic-mirror.png[Traffic Mirroring in Kiali]
 
 Clean up:
 
@@ -531,3 +540,5 @@ spec:
 ----
 oc apply -f 04-waypoint-pdb.yaml
 ----
+
+NOTE: Congratulations! You have completed Module 6: Traffic Management in Ambient Mode.
